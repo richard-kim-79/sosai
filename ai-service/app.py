@@ -1,72 +1,61 @@
-import streamlit as st
-import requests
-import json
-from typing import Dict, List
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import List, Dict, Optional
+import uvicorn
+import os
+from dotenv import load_dotenv
 
-# 페이지 설정
-st.set_page_config(
-    page_title="AI 감정 분석 서비스",
-    page_icon="🤖",
-    layout="wide"
+# Load environment variables
+load_dotenv()
+
+# Initialize FastAPI app
+app = FastAPI(
+    title="AI 감정 분석 서비스",
+    description="감정 분석을 위한 REST API 서비스",
+    version="1.0.0"
 )
 
-# 타이틀
-st.title("🤖 AI 감정 분석 서비스")
-st.markdown("---")
+# CORS 설정
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# 사이드바
-st.sidebar.title("설정")
-api_url = st.sidebar.text_input("API URL", "http://localhost:8001/api/v1/analyze")
+# Request models
+class AnalyzeRequest(BaseModel):
+    message: str
+    chatHistory: List[Dict[str, str]] = []
 
-# 메인 컨텐츠
-st.header("감정 분석")
-user_input = st.text_area("당신의 기분을 입력해주세요", height=150)
+# Response models
+class AnalyzeResponse(BaseModel):
+    emotionScore: Dict[str, float]
+    riskLevel: str
+    response: str
 
-if st.button("분석하기"):
-    if user_input:
-        try:
-            # API 요청
-            response = requests.post(
-                api_url,
-                json={
-                    "message": user_input,
-                    "chatHistory": []
-                }
-            )
-            
-            if response.status_code == 200:
-                result = response.json()
-                
-                # 감정 점수 시각화
-                st.subheader("감정 분석 결과")
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    st.write("감정 점수")
-                    for emotion, score in result["emotionScore"].items():
-                        st.progress(score, text=f"{emotion}: {score:.2f}")
-                
-                with col2:
-                    st.write("위험도")
-                    risk_color = {
-                        "LOW": "🟢",
-                        "MID": "🟡",
-                        "HIGH": "🔴"
-                    }
-                    st.markdown(f"### {risk_color[result['riskLevel']]} {result['riskLevel']}")
-                
-                # AI 응답
-                st.subheader("AI 응답")
-                st.info(result["response"])
-                
-            else:
-                st.error(f"API 요청 실패: {response.status_code}")
-                
-        except Exception as e:
-            st.error(f"오류 발생: {str(e)}")
-    else:
-        st.warning("텍스트를 입력해주세요")
+@app.get("/")
+async def root():
+    return {"status": "ok", "message": "AI 감정 분석 서비스가 실행 중입니다."}
 
-# 푸터
-st.markdown("---")
-st.markdown("© 2024 AI 감정 분석 서비스") 
+@app.post("/api/v1/analyze", response_model=AnalyzeResponse)
+async def analyze_emotion(request: AnalyzeRequest):
+    try:
+        # 임시 응답 (실제 구현 필요)
+        return {
+            "emotionScore": {
+                "행복": 0.8,
+                "슬픔": 0.1,
+                "분노": 0.1
+            },
+            "riskLevel": "LOW",
+            "response": "감정 분석 결과입니다. 현재 매우 긍정적인 감정 상태를 보이고 있습니다."
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8001))
+    uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True) 
