@@ -2,21 +2,15 @@ services:
   - type: web
     name: sosai-backend
     env: python
+    runtime: python3
     rootDir: ai-service
-    buildCommand: |
-      python -m venv .venv
-      . .venv/bin/activate
-      pip install -r requirements.txt
-    startCommand: |
-      . .venv/bin/activate
-      uvicorn app:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: OPENAI_API_KEY
         value: your_openai_api_key_here
       - key: PORT
         value: 8001
-      - key: PYTHON_VERSION
-        value: 3.9.7
     healthCheckPath: /
     autoDeploy: true
 
