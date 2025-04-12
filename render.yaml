@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: sosai-backend
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: OPENAI_API_KEY
+        value: your_openai_api_key_here
+      - key: PORT
+        value: 8001
+    healthCheckPath: /health
+    autoDeploy: true
+
+  - type: web
+    name: sosai-frontend
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: VITE_API_URL
+        value: https://sosai-backend.onrender.com
+    healthCheckPath: /
+    autoDeploy: true 
