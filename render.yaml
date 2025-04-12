@@ -3,15 +3,18 @@ services:
     name: sosai-backend
     env: python
     runtime: python3
+    pythonVersion: 3.9.12
     rootDir: ai-service
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    startCommand: gunicorn -w 4 -k uvicorn.workers.UvicornWorker app:app --bind 0.0.0.0:$PORT
     envVars:
       - key: OPENAI_API_KEY
         value: your_openai_api_key_here
       - key: PORT
         value: 8001
-    healthCheckPath: /
+      - key: PYTHON_VERSION
+        value: 3.9.12
+    healthCheckPath: /health
     autoDeploy: true
 
   - type: web
@@ -19,9 +22,11 @@ services:
     env: node
     rootDir: ai-service/frontend
     buildCommand: npm install && npm run build
-    startCommand: npm run preview
+    startCommand: npm run preview -- --host 0.0.0.0 --port $PORT
     envVars:
       - key: VITE_API_URL
         value: https://sosai-backend.onrender.com
+      - key: PORT
+        value: 10000
     healthCheckPath: /
     autoDeploy: true 
