@@ -124,6 +124,9 @@ const ChatBot = () => {
     setIsLoading(true);
     setTimeout(false);
 
+    // 사용자 메시지 추가
+    addMessage(message, true);
+
     // 타임아웃 체크를 위한 타이머 설정
     const timeoutTimer = setTimeout(() => {
       setTimeout(true);
@@ -137,18 +140,31 @@ const ChatBot = () => {
     }, 10000); // 10초 후 타임아웃 경고
 
     try {
-      const response = await axios.post('/api/chat', { message }, {
-        timeout: 30000, // 30초 타임아웃
+      const response = await axios.post(`${API_BASE_URL}/api/v1/analyze`, {
+        message: message,
+        chatHistory: messages.map(msg => ({
+          role: msg.isUser ? "user" : "assistant",
+          content: msg.text
+        }))
       });
 
       clearTimeout(timeoutTimer);
       setTimeout(false);
 
-      if (response.data && response.data.response) {
-        setMessages(prev => [...prev, 
-          { text: message, isUser: true },
-          { text: response.data.response, isUser: false }
-        ]);
+      if (response.data) {
+        // 감정 분석 결과에 따른 위험도 체크
+        if (response.data.riskLevel === "HIGH") {
+          // 위험도가 높은 경우 적절한 비상 연락처 표시
+          const contact = EMERGENCY_CONTACTS[0]; // 임시로 첫 번째 연락처 사용
+          handleRiskSituation("school_violence", contact);
+        }
+
+        // 공감 표현과 AI 응답 결합
+        const empathyPhrase = getRandomPhrase(EMPATHY_PHRASES);
+        const followUpQuestion = getRandomPhrase(FOLLOW_UP_QUESTIONS);
+        const combinedResponse = `${response.data.response}\n\n${empathyPhrase}\n${followUpQuestion}`;
+        
+        addMessage(combinedResponse, false);
       }
     } catch (error) {
       clearTimeout(timeoutTimer);
@@ -163,6 +179,9 @@ const ChatBot = () => {
       });
       
       console.error('Error:', error);
+
+      // 오류 발생 시에도 사용자에게 응답
+      addMessage("죄송합니다. 일시적인 오류가 발생했어요. 하지만 계속해서 이야기를 나누고 싶어요. 잠시 후에 다시 말씀해 주시겠어요?", false);
     } finally {
       setIsLoading(false);
     }
