@@ -17,21 +17,13 @@ services:
     healthCheckPath: /
     autoDeploy: true
 
-  - type: static
+  - type: web
     name: sosai-frontend
-    env: static
-    rootDir: ai-service/frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
-    pullRequestPreviewsEnabled: true
+    env: node
+    buildCommand: cd ai-service/frontend && npm install && npm run build
+    startCommand: cd ai-service/frontend && npm run preview
     envVars:
       - key: VITE_API_URL
         value: https://sosai-backend.onrender.com
-    headers:
-      - path: /*
-        name: Cache-Control
-        value: no-cache
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html 
+      - key: PORT
+        value: 10000 
