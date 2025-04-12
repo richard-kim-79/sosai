@@ -23,6 +23,7 @@ services:
     rootDir: ai-service/frontend
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
+    pullRequestPreviewsEnabled: true
     envVars:
       - key: VITE_API_URL
         value: https://sosai-backend.onrender.com
