@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, VStack, Text, Button, useToast, Collapse, keyframes, Spinner } from '@chakra-ui/react';
+import { Box, VStack, Text, Button, useToast, Collapse, Spinner } from '@chakra-ui/react';
+import { keyframes } from '@emotion/react';
 import ChatInput from './ChatInput';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001';
