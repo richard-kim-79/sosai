@@ -22,7 +22,7 @@ services:
     env: node
     rootDir: ai-service/frontend
     buildCommand: npm install && npm run build
-    startCommand: npx serve dist -l $PORT
+    startCommand: npx serve -s dist -l $PORT
     envVars:
       - key: VITE_API_URL
         value: https://sosai-backend.onrender.com 
