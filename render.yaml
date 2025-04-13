@@ -23,9 +23,11 @@ services:
     nodeVersion: 18.17.0
     rootDir: ai-service/frontend
     buildCommand: npm install && npm run build
-    startCommand: node server.js
+    startCommand: npm start
     envVars:
       - key: VITE_API_URL
         value: https://sosai-backend.onrender.com
       - key: NODE_ENV
-        value: production 
+        value: production
+      - key: PORT
+        value: 10000 
