@@ -20,9 +20,12 @@ services:
   - type: web
     name: sosai-frontend
     env: node
+    nodeVersion: 18.17.0
     rootDir: ai-service/frontend
     buildCommand: npm install && npm run build
-    startCommand: npm start
+    startCommand: node server.js
     envVars:
       - key: VITE_API_URL
-        value: https://sosai-backend.onrender.com 
+        value: https://sosai-backend.onrender.com
+      - key: NODE_ENV
+        value: production 
