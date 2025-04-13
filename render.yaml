@@ -20,10 +20,9 @@ services:
   - type: web
     name: sosai-frontend
     env: node
-    buildCommand: cd ai-service/frontend && npm install && npm run build
-    startCommand: cd ai-service/frontend && npm run preview
+    rootDir: ai-service/frontend
+    buildCommand: npm install && npm run build
+    startCommand: npx serve dist -l $PORT
     envVars:
       - key: VITE_API_URL
-        value: https://sosai-backend.onrender.com
-      - key: PORT
-        value: 10000 
+        value: https://sosai-backend.onrender.com 
