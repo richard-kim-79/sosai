@@ -20,9 +20,9 @@ services:
   - type: static
     name: sosai-frontend
     env: static
-    rootDir: ai-service/frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
+    rootDir: .
+    buildCommand: cd ai-service/frontend && npm install && npm run build
+    staticPublishPath: ai-service/frontend/dist
     envVars:
       - key: VITE_API_URL
         value: https://sosai-backend.onrender.com 
